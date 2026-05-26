@@ -1,6 +1,6 @@
 import random
 import pypokedex # pyright: ignore[reportMissingImports]
-
+import pygame # pyright: ignore[reportMissingImports]
 user_pkmn = []
 enemy_pkmn = []
 curUser_pkmn = None
@@ -9,6 +9,7 @@ userHP = None
 enemyHP = None
 currentUserMoveSet = []
 currentEnemyMoveSet = []
+pygame.mixer.init()
 
 class style:
     BOLD = '\033[1m'
@@ -88,11 +89,22 @@ def newTurn():
             overview()
 
 
-# Starting the Game
 def startGame():
     givePkmn()
+    pygame.mixer.music.load('battle.mp3')
+    pygame.mixer.music.play(-1)
     print(f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name.upper()}{style.END}")
     print(f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name.upper()}{style.END}")
     newTurn()
 
-startGame()
+def titleScreen():
+    pygame.mixer.music.load('title-screen.mp3')
+    pygame.mixer.music.play(-1)
+    print("\nPokemon Battle Sim Python\n")
+    start = int(input("Enter 1 to Start\n>"))
+    if start == 1:
+        startGame()
+    else:
+        start = input("Enter 1 to Start")
+
+titleScreen()
