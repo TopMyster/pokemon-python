@@ -77,9 +77,9 @@ def overview():
     newTurn()
 
 def newTurn():
-    if enemyHP == 0:
+    if enemyHP >= 0:
         print(f"The enemy's {curEnemy_pkmn.name.upper()} fainted")
-    elif userHP == 0:
+    elif userHP >= 0:
         print(f"Your {curUser_pkmn.name.upper()} fainted")
     else:
         play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[ATTACK (1)] [OVERVIEW (2)] [POKEMON (3)]{style.END}\n>"))
