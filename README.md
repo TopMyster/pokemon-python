@@ -5,5 +5,9 @@ A Pokemon Battle Sim made in Python
  - Randomize Battle Themes
  - Switching Pokemon System
  - Pokemon Fainting System
- - Fixes Moves Set
+ - Fixes Moves Damage
+ - Polish README
+ - Sound Effects
  - Weaknesses
+
+ All music and sound effects are owned by Pokemon 
