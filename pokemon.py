@@ -1,5 +1,5 @@
 import random
-import pypokedex
+import pypokedex # pyright: ignore[reportMissingImports]
 
 user_pkmn = []
 enemy_pkmn = []
@@ -36,28 +36,44 @@ def givePkmn():
 
 def enemyAttack():
     global userHP
-    move = random.choice(currentEnemyMoveSet)
+    if currentEnemyMoveSet:
+        move = random.choice(currentEnemyMoveSet)
+    else:
+        move = 'Tackle'
     print(f"The opponent's {curEnemy_pkmn.name} used {move}")
     userHP -= random.randint(10, 60)
     print(f"Your {curUser_pkmn.name} took {curUser_pkmn.base_stats.hp - userHP} damage")
-    newTurn()
 
 
 def attack():
     global enemyHP
-    moves_text = ', '.join(currentUserMoveSet[:4])
-    moveOptions = input(f"Choose a move ({moves_text}): \n>")
-    if curUser_pkmn.base_stats.hp > curEnemy_pkmn.base_stats.hp:
-        print(f"Your {curUser_pkmn.name} used {moveOptions}")
+    moves = currentUserMoveSet[:4]
+    if moves: 
+        moveOptions = int(input(f"Choose a move {style.BOLD}{moves}{style.END}: \n>"))
+        move = currentUserMoveSet[moveOptions+1]
+    else:
+        move = "Tackle"
+    if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
+        print(f"Your {curUser_pkmn.name} used {move}")
         enemyHP -= random.randint(10, 60)
         print(f"The opponent's {curEnemy_pkmn.name} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         enemyAttack()
+        newTurn()
     else:
         enemyAttack()
+        print(f"Your {curUser_pkmn.name} used {moves[moveOptions]}")
         enemyHP -= random.randint(10, 60)
         print(f"The opponent's {curEnemy_pkmn.name} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         newTurn()
 
+def overview():
+    print(
+        f"""
+        \nYour {curUser_pkmn.name}: {userHP}HP
+        \nOpponnent's {curEnemy_pkmn.name}: {enemyHP}HP
+        """
+    )
+    newTurn()
 
 def newTurn():
     if enemyHP == 0:
@@ -65,9 +81,11 @@ def newTurn():
     elif userHP == 0:
         print(f"Your {curUser_pkmn.name} fainted")
     else:
-        play = input(f"What do you want to do?\n{style.BOLD}[Attack (1)] [Pokemon (2)]{style.END}\n>")
-        if play == '1':
+        play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[Attack (1)] [Overview (2)] [Pokemon (3)]{style.END}\n>"))
+        if play == 1:
             attack()
+        elif play == 2:
+            overview()
 
 
 # Starting the Game

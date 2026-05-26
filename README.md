@@ -5,3 +5,4 @@ A Pokemon Battle Sim made in Python
  - Switching Pokemon System
  - Pokemon Fainting System
  - Fixes Moves Set
+ - Weaknesses
