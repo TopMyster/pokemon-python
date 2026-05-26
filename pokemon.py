@@ -40,9 +40,9 @@ def enemyAttack():
         move = random.choice(currentEnemyMoveSet)
     else:
         move = 'Tackle'
-    print(f"The opponent's {curEnemy_pkmn.name} used {move}")
+    print(f"The opponent's {curEnemy_pkmn.name.upper()} used {move}")
     userHP -= random.randint(10, 60)
-    print(f"Your {curUser_pkmn.name} took {curUser_pkmn.base_stats.hp - userHP} damage")
+    print(f"Your {curUser_pkmn.name.upper()} took {curUser_pkmn.base_stats.hp - userHP} damage")
 
 
 def attack():
@@ -54,34 +54,34 @@ def attack():
     else:
         move = "Tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
-        print(f"Your {curUser_pkmn.name} used {move}")
+        print(f"Your {curUser_pkmn.name.upper()} used {move}")
         enemyHP -= random.randint(10, 60)
-        print(f"The opponent's {curEnemy_pkmn.name} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
+        print(f"The opponent's {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
-        print(f"Your {curUser_pkmn.name} used {moves[moveOptions]}")
+        print(f"Your {curUser_pkmn.name.upper()} used {moves[moveOptions]}")
         enemyHP -= random.randint(10, 60)
-        print(f"The opponent's {curEnemy_pkmn.name} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
+        print(f"The opponent's {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         newTurn()
 
 def overview():
     print(
         f"""
-        \nYour {curUser_pkmn.name}: {userHP}HP
-        \nOpponnent's {curEnemy_pkmn.name}: {enemyHP}HP
+        \nYour {curUser_pkmn.name.upper()}: {userHP}HP
+        \nOpponnent's {curEnemy_pkmn.name.upper()}: {enemyHP}HP
         """
     )
     newTurn()
 
 def newTurn():
     if enemyHP == 0:
-        print(f"The enemy's {curEnemy_pkmn.name} fainted")
+        print(f"The enemy's {curEnemy_pkmn.name.upper()} fainted")
     elif userHP == 0:
-        print(f"Your {curUser_pkmn.name} fainted")
+        print(f"Your {curUser_pkmn.name.upper()} fainted")
     else:
-        play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[Attack (1)] [Overview (2)] [Pokemon (3)]{style.END}\n>"))
+        play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[ATTACK (1)] [OVERVIEW (2)] [POKEMON (3)]{style.END}\n>"))
         if play == 1:
             attack()
         elif play == 2:
@@ -91,8 +91,8 @@ def newTurn():
 # Starting the Game
 def startGame():
     givePkmn()
-    print(f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name}{style.END}")
-    print(f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name}{style.END}")
+    print(f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name.upper()}{style.END}")
+    print(f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name.upper()}{style.END}")
     newTurn()
 
 startGame()
