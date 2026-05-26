@@ -29,7 +29,7 @@ def enemyAttack():
         move = random.choice(currentEnemyMoveSet)
     else:
         move = 'Tackle'
-    print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} used {move}")
+    print(f"\n{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} used {move}")
     userHP -= random.randint(10, 40)
     print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {curUser_pkmn.base_stats.hp - userHP} damage")
 
@@ -37,20 +37,32 @@ def enemyAttack():
 def attack():
     global enemyHP
     moves = currentUserMoveSet[:4]
-    if moves: 
-        moveOptions = int(input(f"Choose a move {style.BOLD}{moves}{style.END}: \n>"))
-        move = currentUserMoveSet[moveOptions+1]
+    if moves:
+        choices = ' '.join(f'[{m}]' for m in moves)
+        choice = input(f"Choose a move {style.BOLD}{choices}{style.END}\n>")
+        if choice.isdigit():
+            idx = int(choice) - 1
+            if 0 <= idx < len(moves):
+                move = moves[idx]
+            else:
+                print("Please enter a number.")
+                return
+        elif choice in moves:
+            move = choice
+        else:
+            print("Invalid move selection.")
+            return
     else:
         move = "Tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
-        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
+        print(f"\n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
         enemyHP -= random.randint(10, 40)
         print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
-        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {moves[moveOptions]}")
+        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
         enemyHP -= random.randint(10, 40)
         print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
         newTurn()
