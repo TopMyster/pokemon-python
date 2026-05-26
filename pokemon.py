@@ -23,6 +23,15 @@ class style:
     BOLD = '\033[1m'
     END = '\033[0m'
 
+def print_boxed(text):
+    lines = text.splitlines()
+    width = max(len(line) for line in lines)
+    border = '+' + '-' * (width + 2) + '+'
+    print(border)
+    for line in lines:
+        print(f"| {line.ljust(width)} |")
+    print(border)
+
 def enemyAttack():
     global userHP
     if currentEnemyMoveSet:
@@ -68,12 +77,11 @@ def attack():
         newTurn()
 
 def overview():
-    print(
-        f"""
-        \n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()}: {userHP}HP
-        \n{style.BOLD}Opponnent's{style.END} {curEnemy_pkmn.name.upper()}: {enemyHP}HP
-        """
+    boxed = (
+        f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()}: {userHP}HP\n"
+        f"{style.BOLD}Opponnent's{style.END} {curEnemy_pkmn.name.upper()}: {enemyHP}HP"
     )
+    print_boxed(boxed)
     newTurn()
 
 def newTurn():
@@ -81,13 +89,19 @@ def newTurn():
         pygame.mixer.music.stop()
         pygame.mixer.music.load('sounds/victory.mp3')
         pygame.mixer.music.play()
-        print(f"The enemy's {curEnemy_pkmn.name.upper()} fainted")
-        print("YOU WIN")
+        boxed = (
+            f"The enemy's {curEnemy_pkmn.name.upper()} fainted\n"
+            "YOU WIN"
+        )
+        print_boxed(boxed)
         input("Press Enter to exit")
     elif userHP <= 0:
         pygame.mixer.music.stop()
-        print(f"Your {curUser_pkmn.name.upper()} fainted")
-        print("YOU LOST")
+        boxed = (
+            f"Your {curUser_pkmn.name.upper()} fainted\n"
+            "YOU LOST"
+        )
+        print_boxed(boxed)
         input("Press Enter to exit")
     else:
         play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[ATTACK (1)] [OVERVIEW (2)] [POKEMON (3)]{style.END}\n>"))
@@ -100,8 +114,11 @@ def newTurn():
 def startGame():
     pygame.mixer.music.load('sounds/battle.mp3')
     pygame.mixer.music.play(-1)
-    print(f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name.upper()}{style.END}")
-    print(f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name.upper()}{style.END}")
+    boxed = (
+        f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name.upper()}{style.END}\n"
+        f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name.upper()}{style.END}"
+    )
+    print_boxed(boxed)
     newTurn()
 
 def titleScreen():
