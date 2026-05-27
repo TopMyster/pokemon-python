@@ -15,6 +15,7 @@ This application lets you battle a randomly selected Pokémon opponent in your o
 - Python 3.13+
 - `pypokedex`
 - `pygame`
+- `rich`
 
 ## Installation
 
