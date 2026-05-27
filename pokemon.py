@@ -1,6 +1,7 @@
 import random
 import pypokedex # pyright: ignore[reportMissingImports]
 import pygame # pyright: ignore[reportMissingImports]
+import requests
 user_pkmn = []
 enemy_pkmn = []
 currentUserMoveSet = []
@@ -32,6 +33,14 @@ def print_boxed(text):
         print(f"| {line.ljust(width)} |")
     print(border)
 
+def getMovePower(move):
+    move = move.lower().replace(" ", "-")
+
+    url = f"https://pokeapi.co/api/v2/move/{move}"
+    data = requests.get(url).json()
+
+    return data["power"] or 40
+
 def enemyAttack():
     global userHP
     if currentEnemyMoveSet:
@@ -45,6 +54,7 @@ def enemyAttack():
 
 def attack():
     global enemyHP
+    global userHP
     moves = currentUserMoveSet[:4]
     if moves:
         choices = ' '.join(f'[{m}]' for m in moves)
@@ -65,15 +75,27 @@ def attack():
         move = "Tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
         print(f"\n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
-        enemyHP -= random.randint(10, 40)
-        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
+        power = getMovePower(move)
+        damage = int(
+            (curUser_pkmn.base_stats.attack / curEnemy_pkmn.base_stats.defense)
+            * power
+            / 10
+        )
+        enemyHP -= damage
+        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {damage} damage")
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
         print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
-        enemyHP -= random.randint(10, 40)
-        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {curEnemy_pkmn.base_stats.hp - enemyHP} damage")
+        power = getMovePower(move)
+        damage = int(
+            (curEnemy_pkmn.base_stats.attack / curUser_pkmn.base_stats.defense)
+            * power
+            / 10
+        )
+        userHP -= damage
+        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {damage} damage")
         newTurn()
 
 def overview():

@@ -44,7 +44,6 @@ Then enter `1` at the title screen to start.
 - Add a Pokémon switching system
 - Improve fainting and battle logic
 - Fix move damage handling
-- Add sound effects and victory/defeat music
 - Implement Pokémon type weaknesses
 
 ## Disclaimer
