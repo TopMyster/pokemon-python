@@ -2,6 +2,9 @@ import random
 import pypokedex # pyright: ignore[reportMissingImports]
 import pygame # pyright: ignore[reportMissingImports]
 import requests
+from rich.console import Console
+from rich.progress_bar import ProgressBar
+console = Console()
 user_pkmn = []
 enemy_pkmn = []
 currentUserMoveSet = []
@@ -28,10 +31,10 @@ def print_boxed(text):
     lines = text.splitlines()
     width = max(len(line) for line in lines)
     border = '+' + '-' * (width + 2) + '+'
-    print(border)
+    console.print(border)
     for line in lines:
-        print(f"| {line.ljust(width)} |")
-    print(border)
+        console.print(f"| {line.ljust(width)} |")
+    console.print(border)
 
 def getMovePower(move):
     move = move.lower().replace(" ", "-")
@@ -49,12 +52,12 @@ def useMove(user, target, move):
             userHP+=heal
             if userHP > user.base_stats.hp:
                 userHP=user.base_stats.hp
-            print(f"Your {user.name.upper()} recovered HP!")
+            console.print(f"Your {user.name.upper()} recovered HP!")
         else:
             enemyHP+=heal
             if enemyHP > user.base_stats.hp:
                 enemyHP=user.base_stats.hp
-            print(f"The opponent's {user.name.upper()} recovered HP!")
+            console.print(f"The opponent's {user.name.upper()} recovered HP!")
         return
     
     power = getMovePower(move)
@@ -67,11 +70,11 @@ def useMove(user, target, move):
 
     if target == curEnemy_pkmn:
         enemyHP -= damage
-        print(f"The opponent's {target.name.upper()} took {damage} damage")
+        console.print(f"The opponent's {target.name.upper()} took {damage} damage")
     else:
         userHP -= damage
 
-    print(f"Your {target.name.upper()} took {damage} damage")
+    console.print(f"Your {target.name.upper()} took {damage} damage")
 
 
 def enemyAttack():
@@ -80,7 +83,7 @@ def enemyAttack():
         move = random.choice(currentEnemyMoveSet)
     else:
         move = 'tackle'
-    print(f"\n{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} used {move}")
+    console.print(f"\n[bold]The Opponent's[/bold]{curEnemy_pkmn.name.upper()} used {move}")
     useMove(curEnemy_pkmn, curUser_pkmn, move)
 
 def attack():
@@ -88,38 +91,54 @@ def attack():
     moves = currentUserMoveSet[:4]
     if moves:
         choices = ' '.join(f'[{m}]' for m in moves)
-        choice = input(f"Choose a move {style.BOLD}{choices}{style.END}\n>")
+        choice = input(f"Choose a Move \n{style.BOLD}{choices}{style.END}\n>")
         if choice.isdigit():
             idx = int(choice) - 1
             if 0 <= idx < len(moves):
                 move = moves[idx]
             else:
-                print("Please enter a number.")
+                console.print("Please enter a number.")
                 return
         elif choice in moves:
             move = choice
         else:
-            print("Invalid move selection.")
+            console.print("Invalid move selection.")
             return
     else:
         move = "tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
-        print(f"\n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
+        console.print(f"\n[bold]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
-        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
+        console.print(f"[bold]]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         newTurn()
 
 def overview():
-    boxed = (
-        f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()}: {userHP}HP\n"
-        f"{style.BOLD}Opponnent's{style.END} {curEnemy_pkmn.name.upper()}: {enemyHP}HP"
+    userHPBar = ProgressBar(
+        total=curUser_pkmn.base_stats.hp,
+        completed=userHP
     )
-    print_boxed(boxed)
+
+    enemyHPBar = ProgressBar(
+        total=curEnemy_pkmn.base_stats.hp,
+        completed=enemyHP
+    )
+
+    console.print(
+        f"[bold]Your[/bold] {curUser_pkmn.name.upper()}:",
+        userHPBar,
+        f"{userHP}/{curUser_pkmn.base_stats.hp} HP"
+    )
+
+    console.print(
+        f"[bold]Opponent's[/bold] {curEnemy_pkmn.name.upper()}:",
+        enemyHPBar,
+        f"{enemyHP}/{curEnemy_pkmn.base_stats.hp} HP"
+    )
     newTurn()
 
 def newTurn():
@@ -153,8 +172,8 @@ def startGame():
     pygame.mixer.music.load('sounds/battle.mp3')
     pygame.mixer.music.play(-1)
     boxed = (
-        f"{style.BOLD}The opponent{style.END} sent out {style.BOLD}{curEnemy_pkmn.name.upper()}{style.END}\n"
-        f"{style.BOLD}You{style.END} sent out {style.BOLD}{curUser_pkmn.name.upper()}{style.END}"
+        f"[bold]The opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
+        f"[bold]You[/bold] sent out [bold]{curUser_pkmn.name.upper()}[/bold]"
     )
     print_boxed(boxed)
     newTurn()
@@ -162,7 +181,7 @@ def startGame():
 def titleScreen():
     pygame.mixer.music.load('sounds/title-screen.mp3')
     pygame.mixer.music.play(-1)
-    print(
+    console.print(
         """                        
                              ##*=+*#                        
     ##**#####     #*#**##*# %#*+*## %**##***#   %##         
