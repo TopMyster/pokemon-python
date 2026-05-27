@@ -43,7 +43,8 @@ Then enter `1` at the title screen to start.
 - Randomize battle themes
 - Add a Pokémon switching system
 - Improve fainting and battle logic
-- Fix move damage handling
+- Add more status effects like growl, 
+  swords dance, protect etc...
 - Implement Pokémon type weaknesses
 
 ## Disclaimer

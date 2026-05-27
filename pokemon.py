@@ -41,6 +41,39 @@ def getMovePower(move):
 
     return data["power"] or 40
 
+def useMove(user, target, move):
+    global userHP, enemyHP
+    if move.lower() == "recover":
+        heal = int(user.base_stats.hp*0.5)
+        if user == curUser_pkmn:
+            userHP+=heal
+            if userHP > user.base_stats.hp:
+                userHP=user.base_stats.hp
+            print(f"Your {user.name.upper()} recovered HP!")
+        else:
+            enemyHP+=heal
+            if enemyHP > user.base_stats.hp:
+                enemyHP=user.base_stats.hp
+            print(f"The opponent's {user.name.upper()} recovered HP!")
+        return
+    
+    power = getMovePower(move)
+
+    damage = int(
+        (user.base_stats.attack / target.base_stats.defense)
+        * power
+        / 10
+    )
+
+    if target == curEnemy_pkmn:
+        enemyHP -= damage
+        print(f"The opponent's {target.name.upper()} took {damage} damage")
+    else:
+        userHP -= damage
+
+    print(f"Your {target.name.upper()} took {damage} damage")
+
+
 def enemyAttack():
     global userHP
     if currentEnemyMoveSet:
@@ -48,19 +81,10 @@ def enemyAttack():
     else:
         move = 'tackle'
     print(f"\n{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} used {move}")
-    power = getMovePower(move)
-    damage = int(
-        (curEnemy_pkmn.base_stats.attack / curUser_pkmn.base_stats.defense)
-        * power
-        / 10
-    )
-    userHP -= damage
-    print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {damage} damage")
-
+    useMove(curEnemy_pkmn, curUser_pkmn, move)
 
 def attack():
-    global enemyHP
-    global userHP
+    global userHP, enemyHP
     moves = currentUserMoveSet[:4]
     if moves:
         choices = ' '.join(f'[{m}]' for m in moves)
@@ -81,27 +105,13 @@ def attack():
         move = "tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
         print(f"\n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
-        power = getMovePower(move)
-        damage = int(
-            (curUser_pkmn.base_stats.attack / curEnemy_pkmn.base_stats.defense)
-            * power
-            / 10
-        )
-        enemyHP -= damage
-        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {damage} damage")
+        useMove(curUser_pkmn,curEnemy_pkmn,move)
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
         print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
-        power = getMovePower(move)
-        damage = int(
-            (curUser_pkmn.base_stats.attack / curEnemy_pkmn.base_stats.defense)
-            * power
-            / 10
-        )
-        enemyHP -= damage
-        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {damage} damage")
+        useMove(curUser_pkmn,curEnemy_pkmn,move)
         newTurn()
 
 def overview():
