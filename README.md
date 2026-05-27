@@ -26,7 +26,7 @@ This application lets you battle a randomly selected Pokémon opponent in your o
    ```
 2. Install required packages:
    ```bash
-   pip install pypokedex pygame
+   pip install pypokedex pygame rich
    ```
 
 ## Running the game
