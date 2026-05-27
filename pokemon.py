@@ -46,10 +46,16 @@ def enemyAttack():
     if currentEnemyMoveSet:
         move = random.choice(currentEnemyMoveSet)
     else:
-        move = 'Tackle'
+        move = 'tackle'
     print(f"\n{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} used {move}")
-    userHP -= random.randint(10, 40)
-    print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {curUser_pkmn.base_stats.hp - userHP} damage")
+    power = getMovePower(move)
+    damage = int(
+        (curEnemy_pkmn.base_stats.attack / curUser_pkmn.base_stats.defense)
+        * power
+        / 10
+    )
+    userHP -= damage
+    print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {damage} damage")
 
 
 def attack():
@@ -72,7 +78,7 @@ def attack():
             print("Invalid move selection.")
             return
     else:
-        move = "Tackle"
+        move = "tackle"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
         print(f"\n{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
         power = getMovePower(move)
@@ -90,12 +96,12 @@ def attack():
         print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} used {move}")
         power = getMovePower(move)
         damage = int(
-            (curEnemy_pkmn.base_stats.attack / curUser_pkmn.base_stats.defense)
+            (curUser_pkmn.base_stats.attack / curEnemy_pkmn.base_stats.defense)
             * power
             / 10
         )
-        userHP -= damage
-        print(f"{style.BOLD}Your{style.END} {curUser_pkmn.name.upper()} took {damage} damage")
+        enemyHP -= damage
+        print(f"{style.BOLD}The opponent's{style.END} {curEnemy_pkmn.name.upper()} took {damage} damage")
         newTurn()
 
 def overview():
