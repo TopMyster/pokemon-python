@@ -43,7 +43,6 @@ def getMovePower(move):
     data = requests.get(url).json()
 
     return data["power"] or 40
-    return data["damage_class"]["name"]
 
 def getMoveClass(move):
     move = move.lower().replace(" ", "-")
@@ -178,7 +177,7 @@ def attack():
         newTurn()
     else:
         enemyAttack()
-        console.print(f"[bold]]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
+        console.print(f"[bold]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         newTurn()
 
