@@ -70,21 +70,45 @@ def useMove(user, target, move):
         return
     elif move.lower() in ["agility", "rock-polish", "automize"]:
         user.base_stats = user.base_stats._replace(speed=int(user.base_stats.speed * 2))
+        if user == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {user.name.upper()}'s speed sharply rose!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()}'s speed sharply rose!")
         return
     elif move.lower() == "swords-dance":
         user.base_stats = user.base_stats._replace(attack=int(user.base_stats.attack * 2))
+        if user == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {user.name.upper()}'s attack sharply rose!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()}'s attack sharply rose!")
         return
     elif move.lower() == "growl":
         target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.66))
+        if target == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {target.name.upper()}'s attack fell!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack fell!")
         return
     elif move.lower() in ["charm", "feather-dance"]:
         target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.5))
+        if target == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {target.name.upper()}'s attack sharply fell!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack sharply fell!")
         return
     elif move.lower() in ["tail-whip", "leer"]:
         target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.66))
+        if target == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {target.name.upper()}'s defense fell!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense fell!")
         return
     elif move.lower() == "screech":
         target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.5))
+        if target == curUser_pkmn:
+            console.print(f"[bold]Your[/bold] {target.name.upper()}'s defense sharply fell!")
+        else:
+            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense sharply fell!")
         return
     
     power = getMovePower(move)
@@ -100,6 +124,7 @@ def useMove(user, target, move):
         defense_stat = target.base_stats.sp_def
 
     else:
+        console.print("But it failed!")
         return
 
     damage = int((attack_stat / defense_stat) * power / 10)
@@ -114,8 +139,7 @@ def useMove(user, target, move):
         console.print(f"[bold]The Opponent's[/bold] {target.name.upper()} took {damage} damage")
     else:
         userHP -= damage
-
-    console.print(f"[bold]Your[/bold] {target.name.upper()} took {damage} damage")
+        console.print(f"[bold]Your[/bold] {target.name.upper()} took {damage} damage")
 
 
 def enemyAttack():
