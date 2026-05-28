@@ -43,6 +43,15 @@ def getMovePower(move):
     data = requests.get(url).json()
 
     return data["power"] or 40
+    return data["damage_class"]["name"]
+
+def getMoveClass(move):
+    move = move.lower().replace(" ", "-")
+
+    url = f"https://pokeapi.co/api/v2/move/{move}"
+    data = requests.get(url).json()
+
+    return data["damage_class"]["name"]
 
 def useMove(user, target, move):
     global userHP, enemyHP
@@ -52,33 +61,48 @@ def useMove(user, target, move):
             userHP+=heal
             if userHP > user.base_stats.hp:
                 userHP=user.base_stats.hp
-            console.print(f"Your {user.name.upper()} recovered HP!")
+            console.print(f"[bold]Your[/bold] {user.name.upper()} recovered HP!")
         else:
             enemyHP+=heal
             if enemyHP > user.base_stats.hp:
                 enemyHP=user.base_stats.hp
-            console.print(f"The opponent's {user.name.upper()} recovered HP!")
-    elif move.lower() == "agility" or "rock-polish" or "automize":
-        user.base_stats.speed = user.base_stats.speed * 2 
+            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()} recovered HP!")
+        return
+    elif move.lower() in ["agility", "rock-polish", "automize"]:
+        user.base_stats = user.base_stats._replace(speed=int(user.base_stats.speed * 2))
+        return
     elif move.lower() == "swords-dance":
-        user.base_stats.attack = user.base_stats.attack * 2
+        user.base_stats = user.base_stats._replace(attack=int(user.base_stats.attack * 2))
+        return
     elif move.lower() == "growl":
-        target.base_stats.attack = target.base_stats.attack * 0.66
-    elif move.lower() == "charm" or "feather-dance":
-        target.base_stats.attack = target.base_stats.attack * 0.5
-    elif move.lower() == "tail-whip" or "leer":
-        target.base_stats.defense = target.base_stats.defense * 0.66
+        target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.66))
+        return
+    elif move.lower() in ["charm", "feather-dance"]:
+        target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.5))
+        return
+    elif move.lower() in ["tail-whip", "leer"]:
+        target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.66))
+        return
     elif move.lower() == "screech":
-        target.base_stats.defense = target.base_stats.defense * 0.5
+        target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.5))
         return
     
     power = getMovePower(move)
 
-    damage = int(
-        (user.base_stats.attack / target.base_stats.defense)
-        * power
-        / 10
-    )
+    move_class = getMoveClass(move)
+
+    if move_class == "physical":
+        attack_stat = user.base_stats.attack
+        defense_stat = target.base_stats.defense
+
+    elif move_class == "special":
+        attack_stat = user.base_stats.sp_atk
+        defense_stat = target.base_stats.sp_def
+
+    else:
+        return
+
+    damage = int((attack_stat / defense_stat) * power / 10)
 
     crit_chance = random.randint(1, 24)
     
@@ -87,11 +111,11 @@ def useMove(user, target, move):
 
     if target == curEnemy_pkmn:
         enemyHP -= damage
-        console.print(f"The opponent's {target.name.upper()} took {damage} damage")
+        console.print(f"[bold]The Opponent's[/bold] {target.name.upper()} took {damage} damage")
     else:
         userHP -= damage
 
-    console.print(f"Your {target.name.upper()} took {damage} damage")
+    console.print(f"[bold]Your[/bold] {target.name.upper()} took {damage} damage")
 
 
 def enemyAttack():
@@ -100,7 +124,7 @@ def enemyAttack():
         move = random.choice(currentEnemyMoveSet)
     else:
         move = 'tackle'
-    console.print(f"\n[bold]The Opponent's[/bold]{curEnemy_pkmn.name.upper()} used {move}")
+    console.print(f"\n[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used {move}")
     useMove(curEnemy_pkmn, curUser_pkmn, move)
 
 def attack():
@@ -186,10 +210,10 @@ def newTurn():
 
 
 def startGame():
-    pygame.mixer.music.load('sounds/battle.mp3')
+    pygame.mixer.music.load(f'sounds/themes/theme-{random.randint(1,9)}.mp3')
     pygame.mixer.music.play(-1)
     boxed = (
-        f"[bold]The opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
+        f"[bold]The Opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
         f"[bold]You[/bold] sent out [bold]{curUser_pkmn.name.upper()}[/bold]"
     )
     print_boxed(boxed)
