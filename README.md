@@ -2,6 +2,8 @@
 
 A simple terminal-based Pokémon battle simulator built with Python.
 
+https://github.com/user-attachments/assets/b9cc4ebb-6d3f-4683-94de-3ba6ae43205a
+
 ## Overview
 
 This application lets you battle a randomly selected Pokémon opponent in your own terminal. It includes:
