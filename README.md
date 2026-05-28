@@ -44,8 +44,7 @@ Then enter `1` at the title screen to start.
 - Randomize battle themes
 - Add a Pokémon switching system
 - Improve fainting and battle logic
-- Add more status effects like growl, 
-  swords dance, protect etc...
+- Add more status effects that increase crit damage
 - Implement Pokémon type weaknesses
 
 ## Disclaimer

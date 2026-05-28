@@ -58,6 +58,18 @@ def useMove(user, target, move):
             if enemyHP > user.base_stats.hp:
                 enemyHP=user.base_stats.hp
             console.print(f"The opponent's {user.name.upper()} recovered HP!")
+    elif move.lower() == "agility" or "rock-polish" or "automize":
+        user.base_stats.speed = user.base_stats.speed * 2 
+    elif move.lower() == "swords-dance":
+        user.base_stats.attack = user.base_stats.attack * 2
+    elif move.lower() == "growl":
+        target.base_stats.attack = target.base_stats.attack * 0.66
+    elif move.lower() == "charm" or "feather-dance":
+        target.base_stats.attack = target.base_stats.attack * 0.5
+    elif move.lower() == "tail-whip" or "leer":
+        target.base_stats.defense = target.base_stats.defense * 0.66
+    elif move.lower() == "screech":
+        target.base_stats.defense = target.base_stats.defense * 0.5
         return
     
     power = getMovePower(move)
@@ -67,6 +79,11 @@ def useMove(user, target, move):
         * power
         / 10
     )
+
+    crit_chance = random.randint(1, 24)
+    
+    if crit_chance == 1:
+        damage = int(damage * 1.5)
 
     if target == curEnemy_pkmn:
         enemyHP -= damage
