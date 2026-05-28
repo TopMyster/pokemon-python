@@ -10,7 +10,7 @@ This application lets you battle a randomly selected Pokémon opponent in your o
 
 - A Random Team of Pokémon
 - Turn-based Attack System
-- Background Music
+- Randomized Battle Music
 
 ## Requirements
 
@@ -43,7 +43,6 @@ Then enter `1` at the title screen to start.
 
 ## TODO
 
-- Randomize battle themes
 - Add a Pokémon switching system
 - Improve fainting and battle logic
 - Add more status effects that increase crit damage
