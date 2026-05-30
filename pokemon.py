@@ -52,6 +52,14 @@ def getMoveClass(move):
 
     return data["damage_class"]["name"]
 
+def getMoveType(move):
+    move = move.lower().replace(" ", "-")
+
+    url = f"https://pokeapi.co/api/v2/move/{move}"
+    data = requests.get(url).json()
+
+    return data["type"]["name"]
+
 def useMove(user, target, move):
     global userHP, enemyHP
     if move.lower() == "recover":
@@ -132,6 +140,33 @@ def useMove(user, target, move):
     
     if crit_chance == 1:
         damage = int(damage * 1.5)
+
+    op_types = target.types
+
+    move_type = getMoveType(move)
+
+    type_data = requests.get(f"https://pokeapi.co/api/v2/type/{move_type}").json()
+    no_damage = [t["name"] for t in type_data["damage_relations"]["no_damage_to"]]
+    half_damage = [t["name"] for t in type_data["damage_relations"]["half_damage_to"]]
+    double_damage = [t["name"] for t in type_data["damage_relations"]["double_damage_to"]]
+
+    effectiveness = 1.0
+    for op_type in op_types:
+        if op_type in no_damage:
+            effectiveness *= 0
+        elif op_type in half_damage:
+            effectiveness *= 0.5
+        elif op_type in double_damage:
+            effectiveness *= 2
+
+    if effectiveness > 1:
+        console.print("[bold yellow]It's super effective![/bold yellow]")
+    elif effectiveness == 0:
+        console.print("[bold dim]It doesn't affect the opponent...[/bold dim]")
+    elif effectiveness < 1:
+        console.print("[dim]It's not very effective...[/dim]")
+
+    damage = int(damage * effectiveness)
 
     if target == curEnemy_pkmn:
         enemyHP -= damage

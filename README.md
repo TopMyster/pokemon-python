@@ -45,8 +45,7 @@ Then enter `1` at the title screen to start.
 
 - Add a Pokémon switching system
 - Improve fainting and battle logic
-- Add more status effects that increase crit damage
-- Implement Pokémon type weaknesses
+- Add more status effects
 
 ## Disclaimer
 
