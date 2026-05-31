@@ -353,11 +353,11 @@ def titleScreen():
 
     console.print(colored)
     console.print("\n[bold blue]Python[/bold blue] [bold yellow]Battle Sim[/bold yellow]")  
-    console.print("Enter [bold]1[/] to start")
+    console.print("Enter [bold white]1[/] to start")
     start = int(input(">"))
     if start == 1:
         startGame()
     else:
-        start = input("Enter 1 to Start")
+        start = int(input(">"))
 
 titleScreen()
