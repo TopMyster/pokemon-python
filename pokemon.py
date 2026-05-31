@@ -5,7 +5,6 @@ import requests
 from rich.console import Console
 from rich.progress_bar import ProgressBar
 from rich.panel import Panel
-
 console = Console()
 user_pkmn = []
 enemy_pkmn = []
@@ -300,11 +299,26 @@ def newTurn():
         pygame.mixer.music.load('sounds/victory.mp3')
         pygame.mixer.music.play()
         battle_dialogue(f"[bold]The Opponent's[/bold] {curEnemy_pkmn.name.upper()} fainted\nYOU WIN", "green")
-        input("Press Enter to exit")
+        console.print("Press Enter to exit or [bold cyan]1[/] for the battle log\n")
+        option = input(">")
+        if option == "1":
+            for line in battle_log:
+                console.print(line)
+            input("Press Enter to exit")
+        else:
+            return
+
     elif userHP <= 0:
         pygame.mixer.music.stop()
-        battle_dialogue(f"[bold cyan]Your{curUser_pkmn.name.upper()}[/] fainted\nYOU LOST", "red")
-        input("Press Enter to exit")
+        battle_dialogue(f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] fainted\nYOU LOST", "red")
+        console.print("Press Enter to exit or [bold cyan]1[/] for the battle log\n")
+        option = input(">")
+        if option == "1":
+            for line in battle_log:
+                console.print(line)
+            input("Press Enter to exit")
+        else:
+            return
     else:
         console.print("\nWhat do you want to do?")
         console.print("[bold red]ATTACK (1)[/] [bold blue]OVERVIEW (2)[/] [bold yellow]POKEMON (3)[/]")
