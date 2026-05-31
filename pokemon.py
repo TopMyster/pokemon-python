@@ -219,8 +219,8 @@ def enemyAttack():
     if currentEnemyMoveSet:
         move = random.choice(currentEnemyMoveSet)
     else:
-        move = 'tackle'
-    console.print(f"\n[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used {move}")
+        move = '[bold white]Tackle[/]'
+    console.print(f"\n[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
     useMove(curEnemy_pkmn, curUser_pkmn, move)
 
 def attack():
@@ -243,9 +243,9 @@ def attack():
             console.print("Invalid move selection.")
             return
     else:
-        move = "tackle"
+        move = "[bold white]Tackle[/]"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
-        console.print(f"\n[bold]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
+        console.print(f"\n[bold]Your[/bold] {curUser_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         enemyAttack()
         newTurn()
