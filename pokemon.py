@@ -111,6 +111,20 @@ def getMoveColor(move):
         return "hot_pink"
     else:
         return "white"
+    
+def poisonTarget(target):
+    global currEnemyPoisoned, currUserPoisoned
+    if target == curUser_pkmn:
+        currUserPoisoned = True
+    elif target == curEnemy_pkmn:
+        currEnemyPoisoned = True
+
+def burnTarget(target):
+    global currEnemyBurned, currUserBurned
+    if target == curUser_pkmn:
+        currUserBurned = True
+    elif target == curEnemy_pkmn:
+        currEnemyBurned = True
 
 def useMove(user, target, move):
     global userHP, enemyHP
@@ -169,6 +183,34 @@ def useMove(user, target, move):
         else:
             battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense sharply fell!", "dim")
         return
+    elif move.lower() in ["toxic", "poison-gas", "poison-powder", "toxic-spikes", "poison-thread"]:
+        if target == curUser_pkmn:
+            poisonTarget(curEnemy_pkmn)
+        else: 
+            poisonTarget(curUser_pkmn)
+    elif move.lower() in ["will-o-wisp", "sacred-fire", "inferno", "burning-jealousy"]:
+        if target == curUser_pkmn:
+            burnTarget(curEnemy_pkmn)
+        else: 
+            burnTarget(curUser_pkmn)
+    if op_type != "steel":
+        if currEnemyPoisoned:
+            enemyPoisonDamage=enemyHP*.125
+            enemyHP-=enemyPoisonDamage
+            battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()} is poisoned and lost [bold red]{enemyPoisonDamage}[/]", "magenta")
+        elif currUserPoisoned:
+            userPoisonDamage=userHP*.125
+            userHP-=userPoisonDamage
+            battle_dialogue(f"[bold]Your[/bold] {target.name.upper()} is poisoned and lost [bold red]{userPoisonDamage}[/]", "magenta")
+
+    if currEnemyBurned:
+        enemyBurnDamage=enemyHP*.0625
+        enemyHP-=enemyBurnDamage
+        battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()} is burned and lost [bold red]{enemyBurnDamage}[/]", "red")
+    elif currUserBurned:
+        userBurnDamage=userHP*.0625
+        userHP-=userBurnDamage
+        battle_dialogue(f"[bold]Your[/bold] {target.name.upper()} is burned and lost [bold red]{userBurnDamage}[/]", "red")
     
     power = getMovePower(move)
 
