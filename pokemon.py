@@ -36,6 +36,9 @@ currUserPoisoned = False
 currEnemyBurned = False
 currUserBurned = False
 
+userStatusEffects = []
+enemyStatusEffects = []
+
 battle_log = []
 
 def print_boxed(text, color="blue"):
@@ -118,18 +121,23 @@ def getMoveColor(move):
         return "white"
     
 def poisonTarget(target):
-    global currEnemyPoisoned, currUserPoisoned
+    global currEnemyPoisoned, currUserPoisoned, userStatusEffects, enemyStatusEffects
     if target == curUser_pkmn:
         currUserPoisoned = True
+        userStatusEffects.append("[bold magenta]Poisoned[/]")
     elif target == curEnemy_pkmn:
         currEnemyPoisoned = True
+        enemyStatusEffects.append("[bold magenta]Poisoned[/]")
+    
 
 def burnTarget(target):
     global currEnemyBurned, currUserBurned
     if target == curUser_pkmn:
         currUserBurned = True
+        userStatusEffects.append("[bold red]Burned[/]")
     elif target == curEnemy_pkmn:
         currEnemyBurned = True
+        enemyStatusEffects.append("[bold red]Burned[/]")
 
 def useMove(user, target, move):
     global userHP, enemyHP, currEnemyPoisoned, currUserPoisoned, currEnemyBurned, currUserBurned
@@ -327,13 +335,13 @@ def overview():
     )
 
     console.print(
-        f"[bold cyan]Your {curUser_pkmn.name.upper()}[/]:",
+        f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] ({', '.join(userStatusEffects)}):",
         userHPBar,
         f"{userHP}/{curUser_pkmn.base_stats.hp} HP"
     )
 
     console.print(
-        f"[bold]Opponent's[/bold] {curEnemy_pkmn.name.upper()}:",
+        f"[bold]Opponent's {curEnemy_pkmn.name.upper()}[/] ({', '.join(enemyStatusEffects)}):",
         enemyHPBar,
         f"{enemyHP}/{curEnemy_pkmn.base_stats.hp} HP"
     )
