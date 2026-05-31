@@ -60,6 +60,48 @@ def getMoveType(move):
 
     return data["type"]["name"]
 
+def getMoveColor(move):
+    move_type = getMoveType(move)
+
+    if move_type == "normal":
+        return "white"
+    elif move_type == "fire":
+        return "red"
+    elif move_type == "water":
+        return "blue"
+    elif move_type == "grass":
+        return "green"
+    elif move_type == "electric":
+        return "yellow"
+    elif move_type == "ice":
+        return "cyan"
+    elif move_type == "fighting":
+        return "magenta"
+    elif move_type == "poison":
+        return "magenta"
+    elif move_type == "ground":
+        return "yellow"
+    elif move_type == "flying":
+        return "cyan"
+    elif move_type == "psychic":
+        return "magenta"
+    elif move_type == "bug":
+        return "green"
+    elif move_type == "rock":
+        return "yellow"
+    elif move_type == "ghost":
+        return "magenta"
+    elif move_type == "dragon":
+        return "magenta"
+    elif move_type == "steel":
+        return "cyan"
+    elif move_type == "dark":
+        return "black"
+    elif move_type == "fairy":
+        return "magenta"
+    else:
+        return "white"
+
 def useMove(user, target, move):
     global userHP, enemyHP
     if move.lower() == "recover":
@@ -189,8 +231,9 @@ def attack():
     global userHP, enemyHP
     moves = currentUserMoveSet[:4]
     if moves:
-        choices = ' '.join(f'[{m}]' for m in moves)
-        choice = input(f"Choose a Move \n{style.BOLD}{choices}{style.END}\n>")
+        choices = ' '.join(f'[bold {getMoveColor(m)}][{m.replace("-", " ").capitalize()} ({idx + 1})] [/]' for idx, m in enumerate(moves))
+        console.print(f"[red]Choose a Move[/red]\n{choices}")
+        choice = input(">")
         if choice.isdigit():
             idx = int(choice) - 1
             if 0 <= idx < len(moves):
@@ -260,11 +303,15 @@ def newTurn():
         print_boxed(boxed)
         input("Press Enter to exit")
     else:
-        play = int(input(f"\nWhat do you want to do?\n{style.BOLD}[ATTACK (1)] [OVERVIEW (2)] [POKEMON (3)]{style.END}\n>"))
+        console.print("\nWhat do you want to do?")
+        console.print("[bold red]ATTACK (1)[/] [bold blue]OVERVIEW (2)[/] [bold yellow]POKEMON (3)[/]")
+        play = int(input(">"))
         if play == 1:
             attack()
         elif play == 2:
             overview()
+        elif play == 3:
+            return
 
 
 def startGame():
@@ -281,7 +328,7 @@ def titleScreen():
     pygame.mixer.music.load('sounds/title-screen.mp3')
     pygame.mixer.music.play(-1)
     console.print(
-        """                        
+        """[bold yellow]                        
                              ##*=+*#                        
     ##**#####     #*#**##*# %#*+*## %**##***#   %##         
  #***+==-==+**#  %#+=-**==**#******##*==*+-+#   %#****##### 
@@ -293,7 +340,7 @@ def titleScreen():
      %%#+-=*#%#***#%#**#  %%%%###    %%%%%#***#%%#**#--+#   
       %%#==*# %%%% %%%%       %%          %%%%% %%%%#++##   
        %%#%%%
-        Python Battle Sim\n       
+        [/bold yellow][bold blue]Python Battle Sim[/bold blue]\n       
         """
     )
     start = int(input("Enter 1 to Start\n>"))
