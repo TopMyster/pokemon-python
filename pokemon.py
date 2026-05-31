@@ -31,6 +31,11 @@ allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
 currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
 currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
 
+currEnemyPoisoned = False
+currUserPoisoned = False
+currEnemyBurned = False
+currUserBurned = False
+
 battle_log = []
 
 def print_boxed(text, color="blue"):
@@ -127,7 +132,7 @@ def burnTarget(target):
         currEnemyBurned = True
 
 def useMove(user, target, move):
-    global userHP, enemyHP
+    global userHP, enemyHP, currEnemyPoisoned, currUserPoisoned, currEnemyBurned, currUserBurned
     if move.lower() == "recover":
         heal = int(user.base_stats.hp*0.5)
         if user == curUser_pkmn:
@@ -184,16 +189,15 @@ def useMove(user, target, move):
             battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense sharply fell!", "dim")
         return
     elif move.lower() in ["toxic", "poison-gas", "poison-powder", "toxic-spikes", "poison-thread"]:
-        if target == curUser_pkmn:
-            poisonTarget(curEnemy_pkmn)
-        else: 
-            poisonTarget(curUser_pkmn)
+        poisonTarget(target)
+        battle_dialogue(f"{target.name.upper()} was poisoned!", "magenta")
+        return
+
     elif move.lower() in ["will-o-wisp", "sacred-fire", "inferno", "burning-jealousy"]:
-        if target == curUser_pkmn:
-            burnTarget(curEnemy_pkmn)
-        else: 
-            burnTarget(curUser_pkmn)
-    if op_type != "steel":
+        burnTarget(target)
+        battle_dialogue(f"{target.name.upper()} was burned!", "red")
+        return
+    if "steel" not in target.types:
         if currEnemyPoisoned:
             enemyPoisonDamage=enemyHP*.125
             enemyHP-=enemyPoisonDamage
