@@ -7,8 +7,6 @@ from rich.progress_bar import ProgressBar
 console = Console()
 user_pkmn = []
 enemy_pkmn = []
-currentUserMoveSet = []
-currentEnemyMoveSet = []
 pygame.mixer.init()
 rand_dex1 = random.randint(1, 1010)
 rand_dex2 = random.randint(1, 1010)
@@ -20,8 +18,10 @@ curUser_pkmn = user_pkmn[0]
 curEnemy_pkmn = enemy_pkmn[0]
 userHP = curUser_pkmn.base_stats.hp
 enemyHP = curEnemy_pkmn.base_stats.hp
-currentUserMoveSet = [move.name for move in curUser_pkmn.moves['scarlet-violet']]
-currentEnemyMoveSet = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
+allUserMoves = [move.name for move in curUser_pkmn.moves['scarlet-violet']]
+allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
+currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
+currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
 
 class style:
     BOLD = '\033[1m'
@@ -229,7 +229,7 @@ def enemyAttack():
 
 def attack():
     global userHP, enemyHP
-    moves = random.sample(currentUserMoveSet, min(4, len(currentUserMoveSet)))
+    moves = currentUserMoveSet
     if moves:
         choices = ' '.join(f'[bold {getMoveColor(m)}][{m.replace("-", " ").capitalize()} ({idx + 1})] [/]' for idx, m in enumerate(moves))
         console.print(f"[red]Choose a Move[/red]\n{choices}")
