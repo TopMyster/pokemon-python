@@ -44,7 +44,6 @@ Then enter `1` at the title screen to start.
 ## TODO
 
 - Add a Pokémon switching system
-- Improve fainting and battle logic
 - Add more status effects
 
 ## Disclaimer

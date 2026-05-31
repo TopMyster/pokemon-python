@@ -229,7 +229,7 @@ def enemyAttack():
 
 def attack():
     global userHP, enemyHP
-    moves = currentUserMoveSet[:4]
+    moves = random.sample(currentUserMoveSet, min(4, len(currentUserMoveSet)))
     if moves:
         choices = ' '.join(f'[bold {getMoveColor(m)}][{m.replace("-", " ").capitalize()} ({idx + 1})] [/]' for idx, m in enumerate(moves))
         console.print(f"[red]Choose a Move[/red]\n{choices}")
