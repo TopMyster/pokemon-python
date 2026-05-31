@@ -161,6 +161,13 @@ def useMove(user, target, move):
         else:
             battle_dialogue(f"[bold]The Opponent's[/bold] {user.name.upper()}'s speed sharply rose!", "dim")
         return
+    elif move.lower() in ["string-shot", "scary-face", "sticky-web", "cotton-spore", "web-shot"]:
+        user.base_stats = user.base_stats._replace(speed=int(user.base_stats.speed * 0.5))
+        if user == curUser_pkmn:
+            battle_dialogue(f"[bold cyan]Your {user.name.upper()}'s[/] speed fell!", "dim")
+        else:
+            battle_dialogue(f"[bold]The Opponent's[/bold] {user.name.upper()}'s speed fell!", "dim")
+        return
     elif move.lower() == "swords-dance":
         user.base_stats = user.base_stats._replace(attack=int(user.base_stats.attack * 2))
         if user == curUser_pkmn:

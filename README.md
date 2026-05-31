@@ -8,10 +8,10 @@ https://github.com/user-attachments/assets/b9cc4ebb-6d3f-4683-94de-3ba6ae43205a
 
 This application lets you battle a randomly selected Pokémon opponent in your own terminal. It includes:
 
-- A Random Team of Pokémon
+- Real Pokémon Moves and Stats
+- Randomized Teams of Pokémon
 - Turn-based Attack System
 - Randomized Battle Music
-- Real Pokémon Stats and Moves
 - Works Offline
 
 ## Requirements
