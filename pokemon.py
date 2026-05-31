@@ -327,23 +327,34 @@ def startGame():
 def titleScreen():
     pygame.mixer.music.load('sounds/title-screen.mp3')
     pygame.mixer.music.play(-1)
-    console.print(
-        """[bold yellow]                        
-                             ##*=+*#                        
-    ##**#####     #*#**##*# %#*+*## %**##***#   %##         
- #***+==-==+**#  %#+=-**==**#******##*==*+-+#   %#****##### 
+    logo = r"""
+                             ##*=+*#
+    ##**#####     #*#**##*# %#*+*## %**##***#   %##
+ #***+==-==+**#  %#+=-**==**#******##*==*+-+#   %#****#####
 %#*------==--*#  ###=-+=--=*+-***-+##=--+=-=*#####*--+#*=+*#
  %#*+=--=***-+##***#+---=*#*-+#*=**##------=**++=+*=-=*+-=*#
-  ##%*=--+#==#=+*-==*=--==**+---=--+*=-+-==*==#**++*--*--*# 
+  ##%*=--+#==#=+*-==*=--==**+---=--+*=-+-==*==#**++*--*--*#
     %%*---=*#*-=***-*+=**=-=******##+-=#**+*=-===-*++---=#  
      %#*--+#%*-----+*==#%%#**==#%%%%#**%##*+**==**==*--=*#  
      %%#+-=*#%#***#%#**#  %%%%###    %%%%%#***#%%#**#--+#   
       %%#==*# %%%% %%%%       %%          %%%%% %%%%#++##   
        %%#%%%
-        [/bold yellow][bold blue]Python Battle Sim[/bold blue]\n       
-        """
-    )
-    start = int(input("Enter 1 to Start\n>"))
+"""
+
+    colored = ""
+
+    for ch in logo:
+        if ch in "#%*":
+            colored += f"[bold blue]{ch}[/]"
+        elif ch in "=+-":
+            colored += f"[bold yellow]{ch}[/]"
+        else:
+            colored += ch
+
+    console.print(colored)
+    console.print("\n[bold blue]Python[/bold blue] [bold yellow]Battle Sim[/bold yellow]")  
+    console.print("Enter [bold]1[/] to start")
+    start = int(input(">"))
     if start == 1:
         startGame()
     else:
