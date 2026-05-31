@@ -72,7 +72,7 @@ def getMoveColor(move):
     elif move_type == "ice":
         return "cyan"
     elif move_type == "fighting":
-        return "magenta"
+        return "brown"
     elif move_type == "poison":
         return "magenta"
     elif move_type == "ground":
@@ -80,21 +80,21 @@ def getMoveColor(move):
     elif move_type == "flying":
         return "cyan"
     elif move_type == "psychic":
-        return "magenta"
+        return "pink"
     elif move_type == "bug":
         return "green"
     elif move_type == "rock":
-        return "yellow"
+        return "brown"
     elif move_type == "ghost":
         return "magenta"
     elif move_type == "dragon":
-        return "magenta"
+        return "blue"
     elif move_type == "steel":
-        return "cyan"
+        return "white"
     elif move_type == "dark":
-        return "black"
+        return "gray"
     elif move_type == "fairy":
-        return "magenta"
+        return "pink"
     else:
         return "white"
 
