@@ -23,10 +23,6 @@ allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
 currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
 currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
 
-class style:
-    BOLD = '\033[1m'
-    END = '\033[0m'
-
 def print_boxed(text):
     lines = text.splitlines()
     width = max(len(line) for line in lines)
