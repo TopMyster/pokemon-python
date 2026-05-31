@@ -11,6 +11,8 @@ This application lets you battle a randomly selected Pokémon opponent in your o
 - A Random Team of Pokémon
 - Turn-based Attack System
 - Randomized Battle Music
+- Real Pokémon Stats and Moves
+- Works Offline
 
 ## Requirements
 

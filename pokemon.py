@@ -4,57 +4,72 @@ import pygame # pyright: ignore[reportMissingImports]
 import requests
 from rich.console import Console
 from rich.progress_bar import ProgressBar
+from rich.panel import Panel
+
 console = Console()
 user_pkmn = []
 enemy_pkmn = []
 pygame.mixer.init()
+
 rand_dex1 = random.randint(1, 1010)
 rand_dex2 = random.randint(1, 1010)
+
 newUserPokemon = pypokedex.get(dex=rand_dex1)
 newEnemyPokemon = pypokedex.get(dex=rand_dex2)
+
 user_pkmn.append(newUserPokemon)
 enemy_pkmn.append(newEnemyPokemon)
+
 curUser_pkmn = user_pkmn[0]
 curEnemy_pkmn = enemy_pkmn[0]
+
 userHP = curUser_pkmn.base_stats.hp
 enemyHP = curEnemy_pkmn.base_stats.hp
+
 allUserMoves = [move.name for move in curUser_pkmn.moves['scarlet-violet']]
 allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
+
 currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
 currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
 
-def print_boxed(text):
-    lines = text.splitlines()
-    width = max(len(line) for line in lines)
-    border = '+' + '-' * (width + 2) + '+'
-    console.print(border)
-    for line in lines:
-        console.print(f"| {line.ljust(width)} |")
-    console.print(border)
+battle_log = []
+
+def print_boxed(text, color="blue"):
+    console.print(Panel(text, border_style=color, expand=False))
+
+def battle_dialogue(text, color="blue"):
+    battle_log.append(text)
+    print_boxed(text, color)
+    return
+
+def safe_get_json(url):
+    try:
+        r = requests.get(url, timeout=10)
+        if r.status_code != 200:
+            return None
+        if not r.text.strip():
+            return None
+        return r.json()
+    except:
+        return None
 
 def getMovePower(move):
     move = move.lower().replace(" ", "-")
-
     url = f"https://pokeapi.co/api/v2/move/{move}"
-    data = requests.get(url).json()
-
-    return data["power"] or 40
+    data = safe_get_json(url)
+    return data["power"] if data and data.get("power") else 40
 
 def getMoveClass(move):
     move = move.lower().replace(" ", "-")
-
     url = f"https://pokeapi.co/api/v2/move/{move}"
-    data = requests.get(url).json()
-
-    return data["damage_class"]["name"]
+    data = safe_get_json(url)
+    return data["damage_class"]["name"] if data else "physical"
 
 def getMoveType(move):
     move = move.lower().replace(" ", "-")
-
     url = f"https://pokeapi.co/api/v2/move/{move}"
-    data = requests.get(url).json()
-
-    return data["type"]["name"]
+    data = safe_get_json(url)
+    return data["type"]["name"] if data else "normal"
 
 def getMoveColor(move):
     move_type = getMoveType(move)
@@ -106,54 +121,54 @@ def useMove(user, target, move):
             userHP+=heal
             if userHP > user.base_stats.hp:
                 userHP=user.base_stats.hp
-            console.print(f"[bold]Your[/bold] {user.name.upper()} recovered HP!")
+            battle_dialogue(f"[bold cyan]Your {user.name.upper()}[/] recovered HP!", "dim")
         else:
             enemyHP+=heal
             if enemyHP > user.base_stats.hp:
                 enemyHP=user.base_stats.hp
-            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()} recovered HP!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {user.name.upper()} recovered HP!", "dim")
         return
     elif move.lower() in ["agility", "rock-polish", "automize"]:
         user.base_stats = user.base_stats._replace(speed=int(user.base_stats.speed * 2))
         if user == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {user.name.upper()}'s speed sharply rose!")
+            battle_dialogue(f"[bold cyan]Your {user.name.upper()}'s[/] speed sharply rose!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()}'s speed sharply rose!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {user.name.upper()}'s speed sharply rose!", "dim")
         return
     elif move.lower() == "swords-dance":
         user.base_stats = user.base_stats._replace(attack=int(user.base_stats.attack * 2))
         if user == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {user.name.upper()}'s attack sharply rose!")
+            battle_dialogue(f"[bold cyan]Your {user.name.upper()}'s[/] attack sharply rose!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {user.name.upper()}'s attack sharply rose!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {user.name.upper()}'s attack sharply rose!", "dim")
         return
     elif move.lower() == "growl":
         target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.66))
         if target == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {target.name.upper()}'s attack fell!")
+            battle_dialogue(f"[bold cyan]Your {target.name.upper()}'s[/] attack fell!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack fell!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack fell!", "dim")
         return
     elif move.lower() in ["charm", "feather-dance"]:
         target.base_stats = target.base_stats._replace(attack=int(target.base_stats.attack * 0.5))
         if target == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {target.name.upper()}'s attack sharply fell!")
+            battle_dialogue(f"[bold cyan]Your {target.name.upper()}'s[/] attack sharply fell!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack sharply fell!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s attack sharply fell!", "dim")
         return
     elif move.lower() in ["tail-whip", "leer"]:
         target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.66))
         if target == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {target.name.upper()}'s defense fell!")
+            battle_dialogue(f"[bold cyan]Your {target.name.upper()}'s[/] defense fell!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense fell!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense fell!", "dim")
         return
     elif move.lower() == "screech":
         target.base_stats = target.base_stats._replace(defense=int(target.base_stats.defense * 0.5))
         if target == curUser_pkmn:
-            console.print(f"[bold]Your[/bold] {target.name.upper()}'s defense sharply fell!")
+            battle_dialogue(f"[bold cyan]Your {target.name.upper()}'s[/] defense sharply fell!", "dim")
         else:
-            console.print(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense sharply fell!")
+            battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()}'s defense sharply fell!", "dim")
         return
     
     power = getMovePower(move)
@@ -169,7 +184,7 @@ def useMove(user, target, move):
         defense_stat = target.base_stats.sp_def
 
     else:
-        console.print("But it failed!")
+        battle_dialogue("But it failed!", "dim")
         return
 
     damage = int((attack_stat / defense_stat) * power / 10)
@@ -198,20 +213,20 @@ def useMove(user, target, move):
             effectiveness *= 2
 
     if effectiveness > 1:
-        console.print("[bold yellow]It's super effective![/bold yellow]")
+        battle_dialogue("[bold yellow]It's super effective![/bold yellow]", "yellow")
     elif effectiveness == 0:
-        console.print("[bold dim]It doesn't affect the opponent...[/bold dim]")
+        battle_dialogue("[bold dim]It doesn't affect the opponent...[/bold dim]", "dim")
     elif effectiveness < 1:
-        console.print("[dim]It's not very effective...[/dim]")
+        battle_dialogue("[dim]It's not very effective...[/dim]", "dim")
 
     damage = int(damage * effectiveness)
 
     if target == curEnemy_pkmn:
         enemyHP -= damage
-        console.print(f"[bold]The Opponent's[/bold] {target.name.upper()} took {damage} damage")
+        battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()} took [bold red]{damage}[/] damage", "red")
     else:
         userHP -= damage
-        console.print(f"[bold]Your[/bold] {target.name.upper()} took {damage} damage")
+        battle_dialogue(f"[bold cyan]Your {target.name.upper()}[/] took [bold red]{damage}[/] damage", "red")
 
 
 def enemyAttack():
@@ -220,7 +235,7 @@ def enemyAttack():
         move = random.choice(currentEnemyMoveSet)
     else:
         move = '[bold white]Tackle[/]'
-    console.print(f"\n[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
+    battle_dialogue(f"[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
     useMove(curEnemy_pkmn, curUser_pkmn, move)
 
 def attack():
@@ -235,23 +250,23 @@ def attack():
             if 0 <= idx < len(moves):
                 move = moves[idx]
             else:
-                console.print("Please enter a number.")
+                battle_dialogue("Please enter a number.")
                 return
         elif choice in moves:
             move = choice
         else:
-            console.print("Invalid move selection.")
+            battle_dialogue("Invalid move selection.")
             return
     else:
         move = "[bold white]Tackle[/]"
     if curUser_pkmn.base_stats.speed > curEnemy_pkmn.base_stats.speed:
-        console.print(f"\n[bold]Your[/bold] {curUser_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
+        battle_dialogue(f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]", "blue")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         enemyAttack()
         newTurn()
     else:
         enemyAttack()
-        console.print(f"[bold]Your[/bold] {curUser_pkmn.name.upper()} used {move}")
+        battle_dialogue(f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] used {move.replace("-", " ").capitalize()}", color="blue")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         newTurn()
 
@@ -267,7 +282,7 @@ def overview():
     )
 
     console.print(
-        f"[bold]Your[/bold] {curUser_pkmn.name.upper()}:",
+        f"[bold cyan]Your {curUser_pkmn.name.upper()}[/]:",
         userHPBar,
         f"{userHP}/{curUser_pkmn.base_stats.hp} HP"
     )
@@ -284,19 +299,11 @@ def newTurn():
         pygame.mixer.music.stop()
         pygame.mixer.music.load('sounds/victory.mp3')
         pygame.mixer.music.play()
-        boxed = (
-            f"The enemy's {curEnemy_pkmn.name.upper()} fainted\n"
-            "YOU WIN"
-        )
-        print_boxed(boxed)
+        battle_dialogue(f"[bold]The Opponent's[/bold] {curEnemy_pkmn.name.upper()} fainted\nYOU WIN", "green")
         input("Press Enter to exit")
     elif userHP <= 0:
         pygame.mixer.music.stop()
-        boxed = (
-            f"Your {curUser_pkmn.name.upper()} fainted\n"
-            "YOU LOST"
-        )
-        print_boxed(boxed)
+        battle_dialogue(f"[bold cyan]Your{curUser_pkmn.name.upper()}[/] fainted\nYOU LOST", "red")
         input("Press Enter to exit")
     else:
         console.print("\nWhat do you want to do?")
@@ -313,11 +320,8 @@ def newTurn():
 def startGame():
     pygame.mixer.music.load(f'sounds/themes/theme-{random.randint(1,9)}.mp3')
     pygame.mixer.music.play(-1)
-    boxed = (
-        f"[bold]The Opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
-        f"[bold]You[/bold] sent out [bold]{curUser_pkmn.name.upper()}[/bold]"
-    )
-    print_boxed(boxed)
+    battle_dialogue(f"[bold]The Opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
+        f"[bold cyan]You[/] sent out [bold]{curUser_pkmn.name.upper()}[/bold]", color="blue")
     newTurn()
 
 def titleScreen():
