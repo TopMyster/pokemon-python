@@ -2,7 +2,7 @@
 
 A simple terminal-based Pokémon battle simulator built with Python.
 
-https://github.com/user-attachments/assets/b9cc4ebb-6d3f-4683-94de-3ba6ae43205a
+https://github.com/user-attachments/assets/9cf1306f-e42e-413a-ada2-b77509518ead
 
 ## Overview
 
