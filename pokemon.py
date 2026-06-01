@@ -288,11 +288,37 @@ def useMove(user, target, move):
         userHP -= damage
         battle_dialogue(f"[bold cyan]Your {target.name.upper()}[/] took [bold red]{damage}[/] damage", "red")
 
+def choose_enemy_move(user):
+    moves = []
+    user_hp_ratio = userHP / user.base_stats.hp
+
+    for move in currentEnemyMoveSet:
+        score = 0
+        power = getMovePower(move) or 40
+        move_class = getMoveClass(move)
+
+        if move_class in ["physical", "special"]:
+            score += power
+            if user_hp_ratio < 0.3:
+                score += 30
+        else:
+            score += 25
+
+        moves.append((move, score))
+
+    def get_score(item):
+        return item[1]
+
+    moves.sort(key=get_score, reverse=True)
+
+    top_moves = moves[:2] if len(moves) >= 2 else moves
+
+    return random.choice(top_moves)[0]
 
 def enemyAttack():
     global userHP
     if currentEnemyMoveSet:
-        move = random.choice(currentEnemyMoveSet)
+        move = choose_enemy_move(curEnemy_pkmn)
     else:
         move = '[bold white]Tackle[/]'
     battle_dialogue(f"[bold]The Opponent's [/bold]{curEnemy_pkmn.name.upper()} used [bold {getMoveColor(move)}]{move.replace('-', ' ').capitalize()}[/]")
