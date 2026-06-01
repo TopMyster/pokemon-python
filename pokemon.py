@@ -5,6 +5,7 @@ import requests
 from rich.console import Console
 from rich.progress_bar import ProgressBar
 from rich.panel import Panel
+
 console = Console()
 user_pkmn = []
 enemy_pkmn = []
@@ -129,7 +130,6 @@ def poisonTarget(target):
         currEnemyPoisoned = True
         enemyStatusEffects.append("[bold magenta]Poisoned[/]")
     
-
 def burnTarget(target):
     global currEnemyBurned, currUserBurned
     if target == curUser_pkmn:
@@ -138,6 +138,27 @@ def burnTarget(target):
     elif target == curEnemy_pkmn:
         currEnemyBurned = True
         enemyStatusEffects.append("[bold red]Burned[/]")
+
+def get_type_effectiveness(move_type, target_types):
+    url = f"https://pokeapi.co/api/v2/type/{move_type}"
+    type_data = safe_get_json(url)
+    if not type_data:
+        return 1.0
+
+    no_damage = [t["name"] for t in type_data["damage_relations"]["no_damage_to"]]
+    half_damage = [t["name"] for t in type_data["damage_relations"]["half_damage_to"]]
+    double_damage = [t["name"] for t in type_data["damage_relations"]["double_damage_to"]]
+
+    effectiveness = 1.0
+    for op_type in target_types:
+        if op_type in no_damage:
+            effectiveness *= 0.0
+        elif op_type in half_damage:
+            effectiveness *= 0.5
+        elif op_type in double_damage:
+            effectiveness *= 2.0
+            
+    return effectiveness
 
 def useMove(user, target, move):
     global userHP, enemyHP, currEnemyPoisoned, currUserPoisoned, currEnemyBurned, currUserBurned
@@ -207,70 +228,50 @@ def useMove(user, target, move):
         poisonTarget(target)
         battle_dialogue(f"{target.name.upper()} was poisoned!", "magenta")
         return
-
     elif move.lower() in ["will-o-wisp", "sacred-fire", "inferno", "burning-jealousy"]:
         burnTarget(target)
         battle_dialogue(f"{target.name.upper()} was burned!", "red")
         return
+
     if "steel" not in target.types:
-        if currEnemyPoisoned:
+        if currEnemyPoisoned and target == curEnemy_pkmn:
             enemyPoisonDamage=enemyHP*.125
             enemyHP-=enemyPoisonDamage
             battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()} is poisoned and lost [bold red]{enemyPoisonDamage}[/]", "magenta")
-        elif currUserPoisoned:
+        elif currUserPoisoned and target == curUser_pkmn:
             userPoisonDamage=userHP*.125
             userHP-=userPoisonDamage
             battle_dialogue(f"[bold]Your[/bold] {target.name.upper()} is poisoned and lost [bold red]{userPoisonDamage}[/]", "magenta")
 
-    if currEnemyBurned:
+    if currEnemyBurned and target == curEnemy_pkmn:
         enemyBurnDamage=enemyHP*.0625
         enemyHP-=enemyBurnDamage
         battle_dialogue(f"[bold]The Opponent's[/bold] {target.name.upper()} is burned and lost [bold red]{enemyBurnDamage}[/]", "red")
-    elif currUserBurned:
+    elif currUserBurned and target == curUser_pkmn:
         userBurnDamage=userHP*.0625
         userHP-=userBurnDamage
         battle_dialogue(f"[bold]Your[/bold] {target.name.upper()} is burned and lost [bold red]{userBurnDamage}[/]", "red")
     
     power = getMovePower(move)
-
     move_class = getMoveClass(move)
 
     if move_class == "physical":
         attack_stat = user.base_stats.attack
         defense_stat = target.base_stats.defense
-
     elif move_class == "special":
         attack_stat = user.base_stats.sp_atk
         defense_stat = target.base_stats.sp_def
-
     else:
         battle_dialogue("But it failed!", "dim")
         return
 
     damage = int((attack_stat / defense_stat) * power / 10)
-
     crit_chance = random.randint(1, 24)
-    
     if crit_chance == 1:
         damage = int(damage * 1.5)
 
-    op_types = target.types
-
     move_type = getMoveType(move)
-
-    type_data = requests.get(f"https://pokeapi.co/api/v2/type/{move_type}").json()
-    no_damage = [t["name"] for t in type_data["damage_relations"]["no_damage_to"]]
-    half_damage = [t["name"] for t in type_data["damage_relations"]["half_damage_to"]]
-    double_damage = [t["name"] for t in type_data["damage_relations"]["double_damage_to"]]
-
-    effectiveness = 1.0
-    for op_type in op_types:
-        if op_type in no_damage:
-            effectiveness *= 0
-        elif op_type in half_damage:
-            effectiveness *= 0.5
-        elif op_type in double_damage:
-            effectiveness *= 2
+    effectiveness = get_type_effectiveness(move_type, target.types)
 
     if effectiveness > 1:
         battle_dialogue("[bold yellow]It's super effective![/bold yellow]", "yellow")
@@ -288,21 +289,33 @@ def useMove(user, target, move):
         userHP -= damage
         battle_dialogue(f"[bold cyan]Your {target.name.upper()}[/] took [bold red]{damage}[/] damage", "red")
 
-def choose_enemy_move(user):
+def choose_enemy_move(enemy):
     moves = []
-    user_hp_ratio = userHP / user.base_stats.hp
+    user_hp_ratio = userHP / curUser_pkmn.base_stats.hp
 
     for move in currentEnemyMoveSet:
         score = 0
         power = getMovePower(move) or 40
         move_class = getMoveClass(move)
+        move_type = getMoveType(move)
+        
+        effectiveness = get_type_effectiveness(move_type, curUser_pkmn.types)
 
         if move_class in ["physical", "special"]:
-            score += power
+            base_move_score = power * effectiveness
+            score += base_move_score
+            
+            if effectiveness > 1:
+                score += 40
+            elif effectiveness == 0:
+                score -= 100
+
             if user_hp_ratio < 0.3:
                 score += 30
         else:
             score += 25
+            if effectiveness == 0:
+                score -= 50
 
         moves.append((move, score))
 
@@ -310,9 +323,7 @@ def choose_enemy_move(user):
         return item[1]
 
     moves.sort(key=get_score, reverse=True)
-
     top_moves = moves[:2] if len(moves) >= 2 else moves
-
     return random.choice(top_moves)[0]
 
 def enemyAttack():
@@ -352,7 +363,7 @@ def attack():
         newTurn()
     else:
         enemyAttack()
-        battle_dialogue(f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] used {move.replace("-", " ").capitalize()}", color="blue")
+        battle_dialogue(f"[bold cyan]Your {curUser_pkmn.name.upper()}[/] used {move.replace('-', ' ').capitalize()}", color="blue")
         useMove(curUser_pkmn,curEnemy_pkmn,move)
         newTurn()
 
@@ -416,7 +427,6 @@ def newTurn():
             overview()
         elif play == 3:
             return
-
 
 def startGame():
     pygame.mixer.music.load(f'sounds/themes/theme-{random.randint(1,9)}.mp3')
