@@ -1,3 +1,5 @@
+import os
+import sys
 import random
 import pypokedex # pyright: ignore[reportMissingImports]
 import pygame # pyright: ignore[reportMissingImports]
@@ -5,6 +7,12 @@ import requests
 from rich.console import Console
 from rich.progress_bar import ProgressBar
 from rich.panel import Panel
+
+
+def resource_path(relative_path: str) -> str:
+    """Return absolute path to resource, works for dev and bundled PyInstaller apps."""
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 console = Console()
 user_pkmn = []
@@ -394,7 +402,7 @@ def overview():
 def newTurn():
     if enemyHP <= 0:
         pygame.mixer.music.stop()
-        pygame.mixer.music.load('sounds/victory.mp3')
+        pygame.mixer.music.load(resource_path('sounds/victory.mp3'))
         pygame.mixer.music.play()
         battle_dialogue(f"[bold]The Opponent's[/bold] {curEnemy_pkmn.name.upper()} fainted\nYOU WIN", "green")
         console.print("Press Enter to exit or [bold cyan]1[/] for the battle log\n")
@@ -429,14 +437,14 @@ def newTurn():
             return
 
 def startGame():
-    pygame.mixer.music.load(f'sounds/themes/theme-{random.randint(1,9)}.mp3')
+    pygame.mixer.music.load(resource_path(f'sounds/themes/theme-{random.randint(1,9)}.mp3'))
     pygame.mixer.music.play(-1)
     battle_dialogue(f"[bold]The Opponent[/bold] sent out [bold]{curEnemy_pkmn.name.upper()}[/bold]\n"
         f"[bold cyan]You[/] sent out [bold]{curUser_pkmn.name.upper()}[/bold]", color="blue")
     newTurn()
 
 def titleScreen():
-    pygame.mixer.music.load('sounds/title-screen.mp3')
+    pygame.mixer.music.load(resource_path('sounds/title-screen.mp3'))
     pygame.mixer.music.play(-1)
     logo = r"""
                              ##*=+*#

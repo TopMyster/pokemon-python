@@ -33,6 +33,20 @@ This application lets you battle a randomly selected Pokémon opponent in your o
    pip install pypokedex pygame rich
    ```
 
+## Create a macOS app bundle
+
+Build the macOS `.app` bundle and DMG from the project root:
+
+```bash
+chmod +x build_dmg.sh
+./build_dmg.sh
+```
+
+The script creates:
+
+- `dist/PokemonBattleSim.app`
+- `dist/PokemonBattleSim.dmg`
+
 ## Running the game
 
 From the project folder:
