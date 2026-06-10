@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pokemon-battle-sim"
+version = "1.0.0"
+description = "A terminal-based Pokémon battle simulator"
+readme = "README.md"
+requires-python = ">=3.13"
+license = {text = "MIT"}
+authors = [
+    {name = "Your Name", email = "your.email@example.com"}
+]
+keywords = ["pokemon", "battle", "simulator", "terminal", "game"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: End Users/Desktop",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Games/Entertainment",
+]
+dependencies = [
+    "pypokedex>=3.1.0",
+    "pygame>=2.5.0",
+    "rich>=13.0.0",
+    "requests>=2.28.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/your-user/pokemon-python"
+Repository = "https://github.com/your-user/pokemon-python.git"
+Issues = "https://github.com/your-user/pokemon-python/issues"
+
+[project.scripts]
+pokemon-battle-sim = "pokemon:main"
+
+[tool.setuptools]
+py-modules = ["pokemon"]
+
+[tool.setuptools.package-data]
+pokemon = ["sounds/**/*"]

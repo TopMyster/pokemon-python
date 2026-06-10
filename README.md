@@ -23,36 +23,46 @@ This application lets you battle a randomly selected Pokémon opponent in your o
 
 ## Installation
 
+### Install from PyPI
+
+```bash
+pip install pokemon-battle-sim
+```
+
+Then run the game:
+
+```bash
+pokemon-battle-sim
+```
+
+### Install from source
+
 1. Clone the repo:
    ```bash
    git clone https://github.com/your-user/pokemon-python.git
    cd pokemon-python
    ```
-2. Install required packages:
+
+2. Install in development mode:
    ```bash
-   pip install pypokedex pygame rich
+   pip install -e .
    ```
 
-## Create a macOS app bundle
-
-Build the macOS `.app` bundle and DMG from the project root:
-
-```bash
-chmod +x build_dmg.sh
-./build_dmg.sh
-```
-
-The script creates:
-
-- `dist/PokemonBattleSim.app`
-- `dist/PokemonBattleSim.dmg`
+3. Run the game:
+   ```bash
+   pokemon-battle-sim
+   ```
 
 ## Running the game
 
-From the project folder:
-
+If installed via pip:
 ```bash
-python3 pokemon.py
+pokemon-battle-sim
+```
+
+Or from the source directory:
+```bash
+python3 -m pokemon
 ```
 
 Then enter `1` at the title screen to start.

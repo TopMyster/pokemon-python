@@ -14,40 +14,21 @@ def resource_path(relative_path: str) -> str:
     base_path = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
     return os.path.join(base_path, relative_path)
 
-console = Console()
+console = None
 user_pkmn = []
 enemy_pkmn = []
-pygame.mixer.init()
-
-rand_dex1 = random.randint(1, 1010)
-rand_dex2 = random.randint(1, 1010)
-
-newUserPokemon = pypokedex.get(dex=rand_dex1)
-newEnemyPokemon = pypokedex.get(dex=rand_dex2)
-
-user_pkmn.append(newUserPokemon)
-enemy_pkmn.append(newEnemyPokemon)
-
-curUser_pkmn = user_pkmn[0]
-curEnemy_pkmn = enemy_pkmn[0]
-
-userHP = curUser_pkmn.base_stats.hp
-enemyHP = curEnemy_pkmn.base_stats.hp
-
-allUserMoves = [move.name for move in curUser_pkmn.moves['scarlet-violet']]
-allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
-
-currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
-currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
-
+curUser_pkmn = None
+curEnemy_pkmn = None
+userHP = 0
+enemyHP = 0
+currentUserMoveSet = []
+currentEnemyMoveSet = []
 currEnemyPoisoned = False
 currUserPoisoned = False
 currEnemyBurned = False
 currUserBurned = False
-
 userStatusEffects = []
 enemyStatusEffects = []
-
 battle_log = []
 
 def print_boxed(text, color="blue"):
@@ -451,7 +432,7 @@ def titleScreen():
     ##**#####     #*#**##*# %#*+*## %**##***#   %##
  #***+==-==+**#  %#+=-**==**#******##*==*+-+#   %#****#####
 %#*------==--*#  ###=-+=--=*+-***-+##=--+=-=*#####*--+#*=+*#
- %#*+=--=***-+##***#+---=*#*-+#*=**##------=**++=+*=-=*+-=*#
+ %#*+=--=***-+##***#+---=*#*-+#*=**##------=**++=+*+-=*#
   ##%*=--+#==#=+*-==*=--==**+---=--+*=-+-==*==#**++*--*--*#
     %%*---=*#*-=***-*+=**=-=******##+-=#**+*=-===-*++---=#  
      %#*--+#%*-----+*==#%%#**==#%%%%#**%##*+**==**==*--=*#  
@@ -478,5 +459,53 @@ def titleScreen():
         startGame()
     else:
         start = int(input(">"))
+
+
+def main():
+    """Main entry point for the Pokemon Battle Sim game."""
+    global console, user_pkmn, enemy_pkmn, curUser_pkmn, curEnemy_pkmn
+    global userHP, enemyHP, currentUserMoveSet, currentEnemyMoveSet
+    global currEnemyPoisoned, currUserPoisoned, currEnemyBurned, currUserBurned
+    global userStatusEffects, enemyStatusEffects, battle_log
+
+    console = Console()
+    pygame.mixer.init()
+
+    rand_dex1 = random.randint(1, 1010)
+    rand_dex2 = random.randint(1, 1010)
+
+    newUserPokemon = pypokedex.get(dex=rand_dex1)
+    newEnemyPokemon = pypokedex.get(dex=rand_dex2)
+
+    user_pkmn.append(newUserPokemon)
+    enemy_pkmn.append(newEnemyPokemon)
+
+    curUser_pkmn = user_pkmn[0]
+    curEnemy_pkmn = enemy_pkmn[0]
+
+    userHP = curUser_pkmn.base_stats.hp
+    enemyHP = curEnemy_pkmn.base_stats.hp
+
+    allUserMoves = [move.name for move in curUser_pkmn.moves['scarlet-violet']]
+    allEnemyMoves = [move.name for move in curEnemy_pkmn.moves['scarlet-violet']]
+
+    currentUserMoveSet = random.sample(allUserMoves, min(4, len(allUserMoves)))
+    currentEnemyMoveSet = random.sample(allEnemyMoves, min(4, len(allEnemyMoves)))
+
+    currEnemyPoisoned = False
+    currUserPoisoned = False
+    currEnemyBurned = False
+    currUserBurned = False
+
+    userStatusEffects = []
+    enemyStatusEffects = []
+
+    battle_log = []
+
+    titleScreen()
+
+
+if __name__ == "__main__":
+    main()
 
 titleScreen()
