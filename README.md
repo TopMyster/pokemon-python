@@ -39,7 +39,7 @@ pokemon-battle-sim
 
 1. Clone the repo:
    ```bash
-   git clone https://github.com/your-user/pokemon-python.git
+   git clone https://github.com/topmyster/pokemon-python.git
    cd pokemon-python
    ```
 
